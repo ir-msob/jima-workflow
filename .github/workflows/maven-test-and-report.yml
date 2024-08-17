@@ -1,7 +1,31 @@
 name: Maven Test and Report
 on:
   workflow_call:
-
+    inputs:
+      sonar_token:
+        required: true
+        type: string
+      sonar_host_url:
+        required: true
+        type: string
+      sonar_java_binaries:
+        required: true
+        type: string
+      sonar_java_libraries:
+        required: true
+        type: string
+      sonar_organization:
+        required: true
+        type: string
+      sonar_project_key:
+        required: true
+        type: string
+      sonar_coverage_jacoco_xml_report_paths:
+        required: true
+        type: string
+      sonar_maven_plugin_version:
+        required: true
+        type: string
 jobs:
   build:
 
@@ -54,5 +78,5 @@ jobs:
       - id: Run_Maven_Tests
         name: Run Maven Tests
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:${{ vars.SONAR_MAVEN_PLUGIN_VERSION }}:sonar -Dsonar.host.url=${{ vars.SONAR_HOST_URL }} -Dsonar.java.binaries=${{ vars.SONAR_JAVA_BINARIES }} -Dsonar.java.libraries=${{ vars.SONAR_JAVA_LIBRARIES }} -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }} -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} -Dsonar.coverage.jacoco.xmlReportPaths=${{ vars.SONAR_COVERAGE_JACOCO_XML_REPORT_PATHS }} -P test,report,coverage
+          SONAR_TOKEN: ${{ inputs.sonar_token }}
+        run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:${{ inputs.sonar_maven_plugin_version }}:sonar -Dsonar.host.url=${{ inputs.sonar_host_url }} -Dsonar.java.binaries=${{ inputs.sonar_java_binaries }} -Dsonar.java.libraries=${{ inputs.sonar_java_libraries }} -Dsonar.organization=${{ inputs.sonar_organization }} -Dsonar.projectKey=${{ inputs.sonar_project_key }} -Dsonar.coverage.jacoco.xmlReportPaths=${{ inputs.sonar_coverage_jacoco_xml_report_paths }} -P test,report,coverage

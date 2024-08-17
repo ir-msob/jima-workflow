@@ -4,7 +4,7 @@ on:
     types: [ opened ]
 
 jobs:
-  invoke_auto_assign:
+  invoke_issue_opened:
     permissions:
       issues: write
       pull-requests: write
