@@ -1,14 +1,25 @@
 name: Issue - Opened - Auto Assign
+
+# Trigger the workflow when an issue is opened
 on:
   workflow_call:
-
+    inputs:
+      default_issue_assignee:
+        required: true
+        type: string
+    secrets:
+      github_token:
+        required: true
 jobs:
   auto_assign:
     runs-on: ubuntu-latest
+
     steps:
-      - name: 'Auto-assign issue'
+      - name: 'Auto-assign Issue'
+        # This step uses the auto-assign-issue action to assign issues automatically
         uses: pozil/auto-assign-issue@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          assignees: ${{ vars.DEFAULT_ISSUE_ASSIGNEE }}
+          repo-token: ${{ secrets.github_token }}
+          assignees: ${{ inputs.default_issue_assignee }}
+          # Number of assignees to assign to the issue
           numOfAssignee: 1

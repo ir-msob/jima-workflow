@@ -1,7 +1,17 @@
 name: Issue - Opened
 on:
   workflow_call:
-
+    inputs:
+      default_issue_assignee:
+        required: true
+        type: string
+    secrets:
+      github_token:
+        required: true
 jobs:
   invoke_auto_assign_issue:
     uses: ir-msob/jima-workflow/.github/workflows/auto-assign-issue.yml@main
+    with:
+      default_issue_assignee: ${{ inputs.default_issue_assignee }}
+    secrets:
+      github_token: ${{ secrets.github_token }}

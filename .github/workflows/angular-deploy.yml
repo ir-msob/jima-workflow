@@ -1,7 +1,7 @@
-# This workflow will build a package using npm and then publish it to npmjs packages when a release is created
-# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
+# This workflow builds an Angular package using npm and publishes it to the npmjs repository upon release creation.
 
 name: Publish Angular Package to npmJS Repository
+
 on:
   workflow_call:
     inputs:
@@ -11,26 +11,26 @@ on:
     secrets:
       npm_repository_token:
         required: true
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
       - id: Checkout
-        name: Checkout
+        name: Checkout Repository
         uses: actions/checkout@v4
 
-      - id: Check_Directories
-        name: Check Directories
+      - id: Validate_Directories
+        name: Validate Directories
         run: |
           if [ ! -d "web" ] || [ ! -d "web/angular" ]; then
-            echo "Directories web or web/angular do not exist. Exiting without action."
+            echo "Required directories 'web' or 'web/angular' are missing. Exiting."
             exit 0
           fi
 
       - id: Setup_Node_20
-        name: Set up Node 20
+        name: Set Up Node.js 20
         uses: actions/setup-node@v4
         with:
           cache-dependency-path: web/angular/
@@ -42,18 +42,18 @@ jobs:
         name: Cache NPM Packages
         uses: actions/cache@v4
         with:
-          path: '~/.npm'
+          path: ~/.npm
           key: ${{ runner.os }}-${{ matrix.node-version }}-9.8.0-npmcache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - id: Install_Angular_cli
-        name: Install Angular cli
+      - id: Install_Angular_CLI
+        name: Install Angular CLI
         working-directory: web/angular/
         run: npm install -g @angular/cli@latest
 
-      - id: Publish_to_Repository
-        name: Publish to Repository
+      - id: Publish_to_NPM
+        name: Publish to npm Repository
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_repository_token }}
         working-directory: web/angular/
