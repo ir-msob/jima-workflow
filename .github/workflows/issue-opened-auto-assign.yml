@@ -1,7 +1,6 @@
 name: Issue - Opened - Auto Assign
 on:
-  issues:
-    types: [opened]
+  workflow_call:
 
 jobs:
   auto_assign:
