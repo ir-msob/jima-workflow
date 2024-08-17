@@ -1,0 +1,11 @@
+name: Pull Request - main
+on:
+  workflow_call:
+
+jobs:
+  invoke_auto_assign_issue:
+    uses: ir-msob/jima-workflow/.github/workflows/auto-assign-issue.yml@main
+  invoke_maven_test:
+    uses: ir-msob/jima-workflow/.github/workflows/maven-test.yml@main
+  invoke_angular_test:
+    uses: ir-msob/jima-workflow/.github/workflows/angular-test.yml@main

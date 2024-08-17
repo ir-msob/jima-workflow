@@ -3,5 +3,5 @@ on:
   workflow_call:
 
 jobs:
-  invoke_auto_assign:
-    uses: ir-msob/jima-workflow/.github/workflows/issue-opened-auto-assign.yml@main
+  invoke_auto_assign_issue:
+    uses: ir-msob/jima-workflow/.github/workflows/auto-assign-issue.yml@main
