@@ -1,4 +1,4 @@
-name: Maven Test
+name: Maven Test and Report
 on:
   workflow_call:
 
@@ -17,6 +17,14 @@ jobs:
       - id: Fetch_all_branches
         name: Fetch all branches
         run: git fetch --all
+
+      - id: Check_for_POM
+        name: Check for POM file
+        run: |
+          if [ ! -f "pom.xml" ]; then
+            echo "No Maven project found. Exiting without action."
+            exit 0
+          fi
 
       - id: Setup_JDK_21
         name: Set up JDK 21
@@ -43,7 +51,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - id: RunـMavenـTests
+      - id: Run_Maven_Tests
         name: Run Maven Tests
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
