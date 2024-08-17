@@ -4,7 +4,15 @@
 name: Publish Maven Package to Maven Central Repository
 on:
   workflow_call:
-
+    secrets:
+      gpg_secret_key:
+        required: true
+      maven_repository_username:
+        required: true
+      maven_repository_token:
+        required: true
+      gpg_secret_key_password:
+        required: true
 jobs:
   build:
 
@@ -44,15 +52,15 @@ jobs:
         name: Install PGP Secret Key
         run: |
           # Install PGP Secret Key
-          cat <(echo -e "${{ secrets.GPG_SECRET_KEY }}") | gpg --batch --import
+          cat <(echo -e "${{ secrets.gpg_secret_key }}") | gpg --batch --import
           # Verify PGP Secret Key
           gpg --list-secret-keys --keyid-format LONG
 
       - id: Setup_Maven_settings_xml
         name: Setup Maven settings.xml
         env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_REPOSITORY_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_REPOSITORY_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.maven_repository_username }}
+          MAVEN_PASSWORD: ${{ secrets.maven_repository_token }}
         run: |
           mkdir -p ~/.m2
           echo "<settings><servers><server><id>central</id><username>$MAVEN_USERNAME</username><password>$MAVEN_PASSWORD</password></server></servers><profiles><profile><id>release</id><activation><activeByDefault>true</activeByDefault></activation><properties><gpg.executable>gpg2</gpg.executable></properties></profile></profiles></settings>" > ~/.m2/settings.xml
@@ -63,5 +71,5 @@ jobs:
           mvn \
             --no-transfer-progress \
             --batch-mode \
-            -Dgpg.passphrase=${{ secrets.GPG_SECRET_KEY_PASSWORD }} \
+            -Dgpg.passphrase=${{ secrets.gpg_secret_key_password }} \
             clean deploy -P release

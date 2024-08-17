@@ -1,9 +1,33 @@
 name: Release - Created
 on:
   workflow_call:
+    inputs:
+      npm_repository_url:
+        required: true
+        type: string
+    secrets:
+      npm_repository_token:
+        required: true
+      gpg_secret_key:
+        required: true
+      maven_repository_username:
+        required: true
+      maven_repository_token:
+        required: true
+      gpg_secret_key_password:
+        required: true
 
 jobs:
   invoke_maven_deploy:
     uses: ir-msob/jima-workflow/.github/workflows/maven-deploy.yml@main
+    with:
+      npm_repository_url: ${{ inputs.npm_repository_url }}
+    secrets:
+      npm_repository_token: ${{ secrets.npm_repository_token }}
   invoke_angular_deploy:
     uses: ir-msob/jima-workflow/.github/workflows/angular-deploy.yml@main
+    secrets:
+      gpg_secret_key: ${{ secrets.gpg_secret_key }}
+      maven_repository_username: ${{ secrets.maven_repository_username }}
+      maven_repository_token: ${{ secrets.maven_repository_token }}
+      gpg_secret_key_password: ${{ secrets.gpg_secret_key_password }}

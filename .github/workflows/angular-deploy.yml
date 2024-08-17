@@ -4,7 +4,13 @@
 name: Publish Angular Package to npmJS Repository
 on:
   workflow_call:
-
+    inputs:
+      npm_repository_url:
+        required: true
+        type: string
+    secrets:
+      npm_repository_token:
+        required: true
 jobs:
   build:
 
@@ -30,7 +36,7 @@ jobs:
           cache-dependency-path: web/angular/
           node-version: 20
           cache: 'npm'
-          registry-url: ${{vars.NPM_REPOSITORY_URL}}
+          registry-url: ${{ inputs.npm_repository_url }}
 
       - id: Cache_NPM_Packages
         name: Cache NPM Packages
@@ -49,6 +55,6 @@ jobs:
       - id: Publish_to_Repository
         name: Publish to Repository
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_REPOSITORY_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_repository_token }}
         working-directory: web/angular/
         run: npm run publish
