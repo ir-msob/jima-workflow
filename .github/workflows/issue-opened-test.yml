@@ -5,4 +5,7 @@ on:
 
 jobs:
   invoke_auto_assign:
+    permissions:
+      issues: write
+      pull-requests: write
     uses: ir-msob/jima-workflow/.github/workflows/issue-opened.yml@main
