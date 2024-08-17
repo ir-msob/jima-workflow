@@ -2,9 +2,6 @@ name: Pull Request - main
 on:
   workflow_call:
     inputs:
-      sonar_token:
-        required: true
-        type: string
       sonar_host_url:
         required: true
         type: string
@@ -26,13 +23,15 @@ on:
       sonar_maven_plugin_version:
         required: true
         type: string
+    secrets:
+      sonar_token:
+        required: true
 jobs:
   invoke_auto_assign_issue:
     uses: ir-msob/jima-workflow/.github/workflows/auto-assign-issue.yml@main
   invoke_maven_test:
     uses: ir-msob/jima-workflow/.github/workflows/maven-test-and-report.yml@main
     with:
-      sonar_token: ${{ inputs.sonar_token }}
       sonar_host_url: ${{ inputs.sonar_host_url }}
       sonar_java_binaries: ${{ inputs.sonar_java_binaries }}
       sonar_java_libraries: ${{ inputs.sonar_java_libraries }}
@@ -40,5 +39,7 @@ jobs:
       sonar_project_key: ${{ inputs.sonar_project_key }}
       sonar_coverage_jacoco_xml_report_paths: ${{ inputs.sonar_coverage_jacoco_xml_report_paths }}
       sonar_maven_plugin_version: ${{ inputs.sonar_maven_plugin_version }}
+    secrets:
+      sonar_token: ${{ secrets.SONAR_TOKEN }}
   invoke_angular_test:
     uses: ir-msob/jima-workflow/.github/workflows/angular-test.yml@main
