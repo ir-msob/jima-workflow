@@ -6,7 +6,9 @@
 toc::[]
 
 == Introduction
-This repository contains shared workflows for use in various projects. The purpose of creating this repository is to centralize and facilitate the management of CI/CD workflows.
+
+This repository contains shared workflows for use in various projects.
+The purpose of creating this repository is to centralize and facilitate the management of CI/CD workflows.
 
 == Contents
 
@@ -21,7 +23,8 @@ Here you can find a list of the available shared workflows:
 
 == Usage Guide
 
-To use the shared workflows, simply reference them in your repository's workflow files. For example:
+To use the shared workflows, simply reference them in your repository's workflow files.
+For example:
 
 [source,yaml]
 ----
@@ -29,11 +32,13 @@ jobs:
   call_shared_workflow:
     uses: username/jima-workflow/.github/workflows/shared-workflow.yml@main
 ----
+
 Make sure to correctly pass any required inputs and necessary secrets.
 
 == Contributing
 
-Contributions to Jima are welcome! Please fork the repository, make your changes, and submit a pull request.
+Contributions to Jima are welcome!
+Please fork the repository, make your changes, and submit a pull request.
 
 == License
 

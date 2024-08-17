@@ -1,0 +1,9 @@
+name: Release - Created
+on:
+  workflow_call:
+
+jobs:
+  invoke_maven_deploy:
+    uses: ir-msob/jima-workflow/.github/workflows/maven-deploy.yml@main
+  invoke_angular_deploy:
+    uses: ir-msob/jima-workflow/.github/workflows/angular-deploy.yml@main

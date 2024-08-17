@@ -1,0 +1,7 @@
+name: Push - main
+on:
+  workflow_call:
+
+jobs:
+  invoke_maven_test:
+    uses: ir-msob/jima-workflow/.github/workflows/maven-test-and-report.yml@main
