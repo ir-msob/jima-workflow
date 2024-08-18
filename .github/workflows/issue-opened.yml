@@ -1,4 +1,7 @@
+# This workflow triggers the auto-assign issue workflow when an issue is opened.
+
 name: Issue - Opened
+
 on:
   workflow_call:
     inputs:
@@ -8,10 +11,12 @@ on:
     secrets:
       github_token:
         required: true
+
 jobs:
   invoke_auto_assign_issue:
+    # This job invokes the auto-assign issue workflow from another repository
     uses: ir-msob/jima-workflow/.github/workflows/auto-assign-issue.yml@main
     with:
-      default_issue_assignee: ${{ inputs.default_issue_assignee }}
+      default_issue_assignee: ${{ inputs.default_issue_assignee }} # The assignee for the issue
     secrets:
-      github_token: ${{ secrets.github_token }}
+      github_token: ${{ secrets.github_token }} # GitHub token for authentication

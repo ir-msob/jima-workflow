@@ -1,7 +1,47 @@
+# This workflow is triggered on pushes to the main branch.
+# It invokes the Maven test and report workflow for SonarQube analysis.
+
 name: Push - main
+
 on:
   workflow_call:
+    inputs:
+      sonar_host_url:
+        required: true
+        type: string
+      sonar_java_binaries:
+        required: true
+        type: string
+      sonar_java_libraries:
+        required: true
+        type: string
+      sonar_organization:
+        required: true
+        type: string
+      sonar_project_key:
+        required: true
+        type: string
+      sonar_coverage_jacoco_xml_report_paths:
+        required: true
+        type: string
+      sonar_maven_plugin_version:
+        required: true
+        type: string
+    secrets:
+      sonar_token:
+        required: true
 
 jobs:
-  invoke_maven_test:
+  # Job 1: Invoke the Maven test and report workflow
+  invoke_maven_test_and_report:
     uses: ir-msob/jima-workflow/.github/workflows/maven-test-and-report.yml@main
+    with:
+      sonar_host_url: ${{ inputs.sonar_host_url }} # SonarQube host URL
+      sonar_java_binaries: ${{ inputs.sonar_java_binaries }} # Paths to Java binaries
+      sonar_java_libraries: ${{ inputs.sonar_java_libraries }} # Paths to Java libraries
+      sonar_organization: ${{ inputs.sonar_organization }} # SonarQube organization
+      sonar_project_key: ${{ inputs.sonar_project_key }} # SonarQube project key
+      sonar_coverage_jacoco_xml_report_paths: ${{ inputs.sonar_coverage_jacoco_xml_report_paths }} # JaCoCo coverage report paths
+      sonar_maven_plugin_version: ${{ inputs.sonar_maven_plugin_version }} # Sonar Maven plugin version
+    secrets:
+      sonar_token: ${{ secrets.sonar_token }} # SonarQube token for authentication

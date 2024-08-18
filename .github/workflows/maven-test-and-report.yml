@@ -1,4 +1,8 @@
+# This workflow is responsible for running Maven tests and generating reports.
+# It utilizes SonarQube for code quality analysis.
+
 name: Maven Test and Report
+
 on:
   workflow_call:
     inputs:
@@ -26,22 +30,25 @@ on:
     secrets:
       sonar_token:
         required: true
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - id: Checkout
         name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # Step 2: Fetch all branches to ensure access to the latest code
       - id: Fetch_all_branches
         name: Fetch all branches
         run: git fetch --all
 
+      # Step 3: Check for the presence of a POM file
       - id: Check_for_POM
         name: Check for POM file
         run: |
@@ -50,6 +57,7 @@ jobs:
             exit 0
           fi
 
+      # Step 4: Set up JDK 21 for the build
       - id: Setup_JDK_21
         name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -58,6 +66,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      # Step 5: Cache Maven packages to speed up future builds
       - id: Cache_Maven_Packages
         name: Cache Maven Packages
         uses: actions/cache@v4
@@ -67,6 +76,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      # Step 6: Cache SonarCloud packages to improve performance
       - id: Cache_SonarCloud_Packages
         name: Cache SonarCloud Packages
         uses: actions/cache@v4
@@ -75,6 +85,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
+      # Step 7: Run Maven tests and SonarQube analysis
       - id: Run_Maven_Tests
         name: Run Maven Tests
         env:

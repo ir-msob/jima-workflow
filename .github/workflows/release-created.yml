@@ -1,4 +1,8 @@
+# This workflow is triggered when a release is created.
+# It invokes workflows for deploying Maven and Angular projects.
+
 name: Release - Created
+
 on:
   workflow_call:
     inputs:
@@ -18,16 +22,19 @@ on:
         required: true
 
 jobs:
+  # Job 1: Invoke the Maven deploy workflow
   invoke_maven_deploy:
     uses: ir-msob/jima-workflow/.github/workflows/maven-deploy.yml@main
     with:
-      npm_repository_url: ${{ inputs.npm_repository_url }}
+      npm_repository_url: ${{ inputs.npm_repository_url }} # URL for the NPM repository
     secrets:
-      npm_repository_token: ${{ secrets.npm_repository_token }}
+      npm_repository_token: ${{ secrets.npm_repository_token }} # Token for NPM repository authentication
+
+  # Job 2: Invoke the Angular deploy workflow
   invoke_angular_deploy:
     uses: ir-msob/jima-workflow/.github/workflows/angular-deploy.yml@main
     secrets:
-      gpg_secret_key: ${{ secrets.gpg_secret_key }}
-      maven_repository_username: ${{ secrets.maven_repository_username }}
-      maven_repository_token: ${{ secrets.maven_repository_token }}
-      gpg_secret_key_password: ${{ secrets.gpg_secret_key_password }}
+      gpg_secret_key: ${{ secrets.gpg_secret_key }} # GPG secret key for signing
+      maven_repository_username: ${{ secrets.maven_repository_username }} # Username for Maven repository
+      maven_repository_token: ${{ secrets.maven_repository_token }} # Token for Maven repository authentication
+      gpg_secret_key_password: ${{ secrets.gpg_secret_key_password }} # Password for the GPG secret key

@@ -1,4 +1,8 @@
+# This workflow is triggered on pull requests to the main branch.
+# It invokes workflows for auto-assigning issues, running Maven tests, and running Angular tests.
+
 name: Pull Request - main
+
 on:
   workflow_call:
     inputs:
@@ -26,20 +30,26 @@ on:
     secrets:
       sonar_token:
         required: true
+
 jobs:
+  # Job 1: Invoke the auto-assign issue workflow
   invoke_auto_assign_issue:
     uses: ir-msob/jima-workflow/.github/workflows/auto-assign-issue.yml@main
-  invoke_maven_test:
+
+  # Job 2: Invoke the Maven test and reporting workflow
+  invoke_maven_test_and_report:
     uses: ir-msob/jima-workflow/.github/workflows/maven-test-and-report.yml@main
     with:
-      sonar_host_url: ${{ inputs.sonar_host_url }}
-      sonar_java_binaries: ${{ inputs.sonar_java_binaries }}
-      sonar_java_libraries: ${{ inputs.sonar_java_libraries }}
-      sonar_organization: ${{ inputs.sonar_organization }}
-      sonar_project_key: ${{ inputs.sonar_project_key }}
-      sonar_coverage_jacoco_xml_report_paths: ${{ inputs.sonar_coverage_jacoco_xml_report_paths }}
-      sonar_maven_plugin_version: ${{ inputs.sonar_maven_plugin_version }}
+      sonar_host_url: ${{ inputs.sonar_host_url }} # SonarQube host URL
+      sonar_java_binaries: ${{ inputs.sonar_java_binaries }} # Paths to Java binaries
+      sonar_java_libraries: ${{ inputs.sonar_java_libraries }} # Paths to Java libraries
+      sonar_organization: ${{ inputs.sonar_organization }} # SonarQube organization
+      sonar_project_key: ${{ inputs.sonar_project_key }} # SonarQube project key
+      sonar_coverage_jacoco_xml_report_paths: ${{ inputs.sonar_coverage_jacoco_xml_report_paths }} # JaCoCo coverage report paths
+      sonar_maven_plugin_version: ${{ inputs.sonar_maven_plugin_version }} # Sonar Maven plugin version
     secrets:
-      sonar_token: ${{ secrets.SONAR_TOKEN }}
+      sonar_token: ${{ secrets.sonar_token }} # SonarQube token for authentication
+
+  # Job 3: Invoke the Angular test workflow
   invoke_angular_test:
     uses: ir-msob/jima-workflow/.github/workflows/angular-test.yml@main

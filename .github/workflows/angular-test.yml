@@ -1,3 +1,5 @@
+# This workflow sets up an environment to run tests for an Angular application.
+
 name: Angular Test
 
 on:
@@ -8,10 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - id: Checkout
         name: Checkout Repository
         uses: actions/checkout@v4
 
+      # Step 2: Validate that the required directories exist
       - id: Validate_Directories
         name: Validate Directories
         run: |
@@ -20,6 +24,7 @@ jobs:
             exit 0
           fi
 
+      # Step 3: Set up Node.js version 20
       - id: Setup_Node_20
         name: Set Up Node.js 20
         uses: actions/setup-node@v4
@@ -29,6 +34,7 @@ jobs:
           cache: 'npm'
           registry-url: ${{ vars.NPM_REPOSITORY_URL }}
 
+      # Step 4: Cache NPM packages to improve build performance
       - id: Cache_NPM_Packages
         name: Cache NPM Packages
         uses: actions/cache@v4
@@ -38,14 +44,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      # Step 5: Install Angular CLI globally
       - id: Install_Angular_CLI
         name: Install Angular CLI
         working-directory: web/angular/
         run: npm install -g @angular/cli@latest
 
+      # Step 6: Execute NPM tests for the Angular application
       - id: Run_NPM_Tests
         name: Execute NPM Tests
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_REPOSITORY_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_REPOSITORY_TOKEN }} # Use the npm token for authentication
         working-directory: web/angular/
         run: npm run test

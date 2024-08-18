@@ -1,7 +1,8 @@
-# This workflow will build a package using Maven and then publish it to Maven Centeral Repository when a release is created
-# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
+# This workflow builds a Maven package and publishes it to the Maven Central Repository when a release is created.
+# For more information, see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
 
 name: Publish Maven Package to Maven Central Repository
+
 on:
   workflow_call:
     secrets:
@@ -13,16 +14,18 @@ on:
         required: true
       gpg_secret_key_password:
         required: true
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - id: Checkout
         name: Checkout
         uses: actions/checkout@v4
 
+      # Step 2: Check for the presence of a POM file
       - id: Check_for_POM
         name: Check for POM file
         run: |
@@ -31,6 +34,7 @@ jobs:
             exit 0
           fi
 
+      # Step 3: Set up JDK 21 for the build
       - id: Setup_JDK_21
         name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -39,6 +43,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      # Step 4: Cache Maven packages to speed up builds
       - id: Cache_Maven_Packages
         name: Cache Maven Packages
         uses: actions/cache@v4
@@ -48,14 +53,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      # Step 5: Install the PGP secret key for signing
       - id: Install_PGP_Secret_Key
         name: Install PGP Secret Key
         run: |
-          # Install PGP Secret Key
+          # Import the PGP Secret Key
           cat <(echo -e "${{ secrets.gpg_secret_key }}") | gpg --batch --import
-          # Verify PGP Secret Key
+          # Verify the imported PGP Secret Key
           gpg --list-secret-keys --keyid-format LONG
 
+      # Step 6: Set up Maven's settings.xml for authentication
       - id: Setup_Maven_settings_xml
         name: Setup Maven settings.xml
         env:
@@ -65,6 +72,7 @@ jobs:
           mkdir -p ~/.m2
           echo "<settings><servers><server><id>central</id><username>$MAVEN_USERNAME</username><password>$MAVEN_PASSWORD</password></server></servers><profiles><profile><id>release</id><activation><activeByDefault>true</activeByDefault></activation><properties><gpg.executable>gpg2</gpg.executable></properties></profile></profiles></settings>" > ~/.m2/settings.xml
 
+      # Step 7: Deploy the package to the Maven Central Repository
       - id: Deploy_to_Central_Repository
         name: Deploy to Central Repository
         run: |
