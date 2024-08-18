@@ -85,9 +85,26 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      # Step 7: Run Maven tests and SonarQube analysis
+      # Step 7: Check for the existence of the 'reports' module
+      - id: Check_for_reports_module
+        name: Check for 'reports' module
+        run: |
+          if [ -d "reports" ]; then
+            echo "reports module found."
+            echo "run_sonar=true" >> $GITHUB_ENV
+          else
+            echo "reports module not found."
+            echo "run_sonar=false" >> $GITHUB_ENV
+          fi
+
+      # Step 8: Run Maven tests and SonarQube analysis based on the presence of the 'reports' module
       - id: Run_Maven_Tests
         name: Run Maven Tests
         env:
           SONAR_TOKEN: ${{ secrets.sonar_token }}
-        run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:${{ inputs.sonar_maven_plugin_version }}:sonar -Dsonar.host.url=${{ inputs.sonar_host_url }} -Dsonar.java.binaries=${{ inputs.sonar_java_binaries }} -Dsonar.java.libraries=${{ inputs.sonar_java_libraries }} -Dsonar.organization=${{ inputs.sonar_organization }} -Dsonar.projectKey=${{ inputs.sonar_project_key }} -Dsonar.coverage.jacoco.xmlReportPaths=${{ inputs.sonar_coverage_jacoco_xml_report_paths }} -P test,report,coverage
+        run: |
+          if [ "${{ env.run_sonar }}" == "true" ]; then
+            mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:${{ inputs.sonar_maven_plugin_version }}:sonar -Dsonar.host.url=${{ inputs.sonar_host_url }} -Dsonar.java.binaries=${{ inputs.sonar_java_binaries }} -Dsonar.java.libraries=${{ inputs.sonar_java_libraries }} -Dsonar.organization=${{ inputs.sonar_organization }} -Dsonar.projectKey=${{ inputs.sonar_project_key }} -Dsonar.coverage.jacoco.xmlReportPaths=${{ inputs.sonar_coverage_jacoco_xml_report_paths }} -P test,report,coverage
+          else
+            mvn clean verify -P test,report,coverage
+          fi
