@@ -54,7 +54,7 @@ jobs:
         run: |
           if [ ! -f "pom.xml" ]; then
             echo "No Maven project found. Exiting without action."
-            exit 0
+            echo "skip=true" >> $GITHUB_ENV
           fi
 
       # Step 4: Set up JDK 21 for the build
@@ -65,6 +65,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+        if: env.skip != 'true'  # Only run if skip is not true
 
       # Step 5: Cache Maven packages to speed up future builds
       - id: Cache_Maven_Packages
@@ -75,6 +76,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+        if: env.skip != 'true'  # Only run if skip is not true
 
       # Step 6: Cache SonarCloud packages to improve performance
       - id: Cache_SonarCloud_Packages
@@ -84,6 +86,7 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+        if: env.skip != 'true'  # Only run if skip is not true
 
       # Step 7: Check for the existence of the 'reports' module
       - id: Check_for_reports_module
@@ -96,6 +99,7 @@ jobs:
             echo "reports module not found."
             echo "run_sonar=false" >> $GITHUB_ENV
           fi
+        if: env.skip != 'true'  # Only run if skip is not true
 
       # Step 8: Run Maven tests and SonarQube analysis based on the presence of the 'reports' module
       - id: Run_Maven_Tests
@@ -108,3 +112,4 @@ jobs:
           else
             mvn clean verify -P test,report,coverage
           fi
+        if: env.skip != 'true'  # Only run if skip is not true

@@ -31,7 +31,7 @@ jobs:
         run: |
           if [ ! -f "pom.xml" ]; then
             echo "No Maven project found. Exiting without action."
-            exit 0
+            echo "skip=true" >> $GITHUB_ENV
           fi
 
       # Step 3: Set up JDK 21 for the build
@@ -42,6 +42,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+        if: env.skip != 'true'  # Only run if skip is not true
 
       # Step 4: Cache Maven packages to speed up builds
       - id: Cache_Maven_Packages
@@ -52,6 +53,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+        if: env.skip != 'true'  # Only run if skip is not true
 
       # Step 5: Install the PGP secret key for signing
       - id: Install_PGP_Secret_Key
@@ -61,6 +63,7 @@ jobs:
           cat <(echo -e "${{ secrets.gpg_secret_key }}") | gpg --batch --import
           # Verify the imported PGP Secret Key
           gpg --list-secret-keys --keyid-format LONG
+        if: env.skip != 'true'  # Only run if skip is not true
 
       # Step 6: Set up Maven's settings.xml for authentication
       - id: Setup_Maven_settings_xml
@@ -71,6 +74,7 @@ jobs:
         run: |
           mkdir -p ~/.m2
           echo "<settings><servers><server><id>central</id><username>$MAVEN_USERNAME</username><password>$MAVEN_PASSWORD</password></server></servers><profiles><profile><id>release</id><activation><activeByDefault>true</activeByDefault></activation><properties><gpg.executable>gpg2</gpg.executable></properties></profile></profiles></settings>" > ~/.m2/settings.xml
+        if: env.skip != 'true'  # Only run if skip is not true
 
       # Step 7: Deploy the package to the Maven Central Repository
       - id: Deploy_to_Central_Repository
@@ -81,3 +85,4 @@ jobs:
             --batch-mode \
             -Dgpg.passphrase=${{ secrets.gpg_secret_key_password }} \
             clean deploy -P release
+        if: env.skip != 'true'  # Only run if skip is not true

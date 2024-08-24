@@ -21,7 +21,7 @@ jobs:
         run: |
           if [ ! -d "web" ] || [ ! -d "web/angular" ]; then
             echo "The required directories 'web' or 'web/angular' are missing. Exiting."
-            exit 0
+            echo "skip=true" >> $GITHUB_ENV
           fi
 
       # Step 3: Set up Node.js version 20
@@ -33,6 +33,7 @@ jobs:
           node-version: 20
           cache: 'npm'
           registry-url: ${{ vars.NPM_REPOSITORY_URL }}
+        if: env.skip != 'true'  # Only run if skip is not true
 
       # Step 4: Cache NPM packages to improve build performance
       - id: Cache_NPM_Packages
@@ -43,6 +44,7 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.node-version }}-9.8.0-npmcache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+        if: env.skip != 'true'  # Only run if skip is not true
 
       # Step 5: Install Angular CLI globally
       - id: Install_Angular_CLI
@@ -57,3 +59,4 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_REPOSITORY_TOKEN }} # Use the npm token for authentication
         working-directory: web/angular/
         run: npm run test
+        if: env.skip != 'true'  # Only run if skip is not true
